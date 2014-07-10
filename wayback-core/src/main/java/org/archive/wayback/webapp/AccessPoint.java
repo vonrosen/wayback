@@ -1193,7 +1193,7 @@ implements ShutdownListener {
 		}
 	}
 	
-	private String getBestPrefix(String best, String next, String last) {
+	public String getBestPrefix(String best, String next, String last) {
 		if(best != null) {
 			return best;
 		}
