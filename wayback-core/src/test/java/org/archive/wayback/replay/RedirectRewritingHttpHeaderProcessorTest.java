@@ -46,18 +46,20 @@ public class RedirectRewritingHttpHeaderProcessorTest extends TestCase {
 			{ "Content-Range", "bytes 0-49235171/49235172" },
 			{ "Accept-Ranges", "bytes" },
 			{ "Server", "nginx" },
+			{ "Access-Control-Allow-Origin", "*" },
 		};
 
 		for (String[] kv : input) {
 			cut.filter(output, kv[0], kv[1], uriConverter, result);
 		}
 
-		// Content-Type, Content-Disposition, Content-Range are preserved and also copied
+		// Content-Type, Content-Disposition, Content-Range, Access-Control-Allow-Origin are preserved and also copied
 		// to output.
 		assertEquals("bytes 0-49235171/49235172", output.get("X-Archive-Orig-Content-Range"));
 		assertEquals("bytes 0-49235171/49235172", output.get("Content-Range"));
 		assertEquals("audio/mpeg", output.get("Content-Type"));
 		assertEquals("audio/mpeg", output.get("X-Archive-Orig-Content-Type"));
+		assertEquals("*", output.get("Access-Control-Allow-Origin"));
 
 		// Content-Length and Content-Transfer-Encoding are dropped, preserved with prefix
 		assertEquals(null, output.get("Content-Length"));
