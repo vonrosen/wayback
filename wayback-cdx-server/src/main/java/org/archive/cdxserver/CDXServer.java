@@ -2,6 +2,8 @@
 package org.archive.cdxserver;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.net.URISyntaxException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
@@ -44,6 +46,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 public class CDXServer extends BaseCDXServer {
 
+	private String dupeTimestampLastBestStatusFilterClass;
+	private String dupeTimestampBestStatusFilterClass;
+	
 	protected ZipNumCluster zipnumSource;
 	protected CDXInputSource cdxSource;
 
@@ -92,6 +97,24 @@ public class CDXServer extends BaseCDXServer {
 		this.zipnumSource = zipnumSource;
 	}
 
+	public String getDupeTimestampLastBestStatusFilterClass() {
+		return dupeTimestampLastBestStatusFilterClass;
+	}
+
+	public void setDupeTimestampLastBestStatusFilterClass(
+			String dupeTimestampLastBestStatusFilterClass) {
+		this.dupeTimestampLastBestStatusFilterClass = dupeTimestampLastBestStatusFilterClass;
+	}
+
+	public String getDupeTimestampBestStatusFilterClass() {
+		return dupeTimestampBestStatusFilterClass;
+	}
+
+	public void setDupeTimestampBestStatusFilterClass(
+			String dupeTimestampBestStatusFilterClass) {
+		this.dupeTimestampBestStatusFilterClass = dupeTimestampBestStatusFilterClass;
+	}
+	
 	public int getPageSize() {
 		return maxPageSize;
 	}
@@ -460,12 +483,52 @@ public class CDXServer extends BaseCDXServer {
 
 		if (query.collapseTime > 0) {
 			if (collapseToLast) {
-				outputProcessor = new DupeTimestampLastBestStatusFilter(
-					outputProcessor, query.collapseTime, noCollapsePrefix);
+				Constructor dupeTimestampLastBestStatusFilterConstructor;
+
+				try {
+					dupeTimestampLastBestStatusFilterConstructor = Class.forName(
+							getDupeTimestampLastBestStatusFilterClass())
+							.getConstructor(BaseProcessor.class, Integer.TYPE,
+									String[].class);
+
+					outputProcessor = (BaseProcessor) dupeTimestampLastBestStatusFilterConstructor
+							.newInstance(outputProcessor, query.collapseTime,
+									noCollapsePrefix);
+
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+					
+					//fallback
+					outputProcessor = new DupeTimestampLastBestStatusFilter(
+							outputProcessor, query.collapseTime,
+							noCollapsePrefix);					
+				}
+				
 			} else {
-				outputProcessor = new DupeTimestampBestStatusFilter(
-					outputProcessor, query.collapseTime, noCollapsePrefix);
-			}
+				
+				Constructor dupeTimestampBestStatusFilterConstructor;
+
+				try {
+					dupeTimestampBestStatusFilterConstructor = Class.forName(
+							getDupeTimestampBestStatusFilterClass())
+							.getConstructor(BaseProcessor.class, Integer.TYPE,
+									String[].class);
+
+					outputProcessor = (BaseProcessor) dupeTimestampBestStatusFilterConstructor
+							.newInstance(outputProcessor, query.collapseTime,
+									noCollapsePrefix);
+
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+					
+					//fallback
+					outputProcessor = new DupeTimestampBestStatusFilter(
+							outputProcessor, query.collapseTime,
+							noCollapsePrefix);					
+				}
+			}			
 		}
 
 		FieldSplitFormat parseFormat = outputProcessor
