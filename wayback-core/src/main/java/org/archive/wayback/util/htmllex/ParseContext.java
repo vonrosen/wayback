@@ -26,6 +26,7 @@ import java.util.Map;
 import java.util.logging.Logger;
 
 import org.apache.commons.httpclient.URIException;
+import org.archive.accesscontrol.model.RegexRule;
 import org.archive.url.UsableURI;
 import org.archive.url.UsableURIFactory;
 import org.archive.wayback.core.CaptureSearchResult;
@@ -54,7 +55,16 @@ public class ParseContext {
 	private boolean inJS = false;
 	private boolean inScriptText = false;
 	private HashMap<String,String> data = null;
-
+	private RegexRule rule;
+	
+	public RegexRule getRule() {
+		return rule;
+	}
+	
+	public void setRule(RegexRule rule) {
+		this.rule = rule;
+	}
+	
 	/**
 	 * constructor
 	 */

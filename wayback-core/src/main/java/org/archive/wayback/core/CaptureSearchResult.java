@@ -21,6 +21,8 @@ package org.archive.wayback.core;
 
 import java.util.Date;
 
+import org.archive.accesscontrol.model.RegexRule;
+import org.archive.accesscontrol.model.Rule;
 import org.archive.wayback.ResourceIndex;
 import org.archive.wayback.util.url.UrlOperations;
 
@@ -40,6 +42,8 @@ public class CaptureSearchResult extends SearchResult implements Capture {
 	private CaptureSearchResult prevResult = null;
 	private CaptureSearchResult nextResult = null;
 
+	private RegexRule rule = null;
+	
 	public static final String CAPTURE_ORIGINAL_URL = "url";
 	public static final String CAPTURE_ORIGINAL_HOST = "host";
 
@@ -610,7 +614,7 @@ public class CaptureSearchResult extends SearchResult implements Capture {
 	public void setOraclePolicy(String policy) {
 		put(CAPTURE_ORACLE_POLICY, policy);
 	}
-
+	
 	public void setPrevResult(CaptureSearchResult result) {
 		prevResult = result;
 	}
@@ -679,4 +683,13 @@ public class CaptureSearchResult extends SearchResult implements Capture {
 		String httpCode = getHttpCode();
 		return (httpCode.startsWith("2"));
 	}
+	
+	public RegexRule getRule() {
+		return rule;
+	}
+
+	public void setRule(RegexRule rule) {
+		this.rule = rule;
+	}
+	
 }

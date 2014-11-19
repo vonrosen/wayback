@@ -21,6 +21,7 @@ import org.archive.wayback.replay.html.ContextResultURIConverterFactory;
 import org.archive.wayback.replay.html.IdentityResultURIConverterFactory;
 import org.archive.wayback.replay.html.ReplayParseContext;
 import org.archive.wayback.replay.html.StringTransformer;
+import org.archive.wayback.util.htmllex.ParseContext;
 
 /**
  * {@link TextReplayRenderer} that uses {@link StringTransformer} as an underlining
@@ -106,11 +107,7 @@ public class ArchivalURLJSStringTransformerReplayRenderer extends TextReplayRend
 		context.setJspExec(jspExec);
 		context.setInJS(true); //for https://webarchive.jira.com/browse/ARI-3762
 		
-		String policy = result.getOraclePolicy();
-		
-		if (policy != null) {
-			context.putData(CaptureSearchResult.CAPTURE_ORACLE_POLICY, policy);
-		}
+		handleOraclePolicy(context, result);
 		
 		//RewriteReplayParseEventHandler.addRewriteParseContext(context);
 		
@@ -135,6 +132,14 @@ public class ArchivalURLJSStringTransformerReplayRenderer extends TextReplayRend
 	public void setConverterFactory(
 			ContextResultURIConverterFactory converterFactory) {
 		this.converterFactory = converterFactory;
+	}
+	
+	protected void handleOraclePolicy(ParseContext context, CaptureSearchResult result) {
+		String policy = result.getOraclePolicy();
+		
+		if (policy != null) {
+			context.putData(CaptureSearchResult.CAPTURE_ORACLE_POLICY, policy);
+		}		
 	}
 
 }
