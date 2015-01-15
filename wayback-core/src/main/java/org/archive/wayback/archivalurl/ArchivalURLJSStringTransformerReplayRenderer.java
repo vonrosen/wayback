@@ -147,13 +147,5 @@ public class ArchivalURLJSStringTransformerReplayRenderer extends TextReplayRend
 			ContextResultURIConverterFactory converterFactory) {
 		this.converterFactory = converterFactory;
 	}
-	
-	protected void handleOraclePolicy(ParseContext context, CaptureSearchResult result) {
-		String policy = result.getOraclePolicy();
-		
-		if (policy != null) {
-			context.putData(CaptureSearchResult.CAPTURE_ORACLE_POLICY, policy);
-		}		
-	}
 
 }
