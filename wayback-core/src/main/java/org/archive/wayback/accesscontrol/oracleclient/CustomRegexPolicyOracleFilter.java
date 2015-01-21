@@ -15,8 +15,6 @@ public class CustomRegexPolicyOracleFilter extends CustomPolicyOracleFilter {
 	private static final Logger LOGGER = Logger
 			.getLogger(CustomRegexPolicyOracleFilter.class.getName());
 	
-	public CustomRegexPolicyOracleFilter() { }
-	
 	public CustomRegexPolicyOracleFilter(AccessControlClient client, String accessGroup) {
 		super(client, accessGroup);
 	}	
