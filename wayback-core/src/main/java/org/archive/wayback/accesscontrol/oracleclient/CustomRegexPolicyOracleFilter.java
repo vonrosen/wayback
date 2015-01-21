@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.logging.Logger;
 
 import org.archive.accesscontrol.AccessControlClient;
+import org.archive.accesscontrol.RobotsUnavailableException;
 import org.archive.accesscontrol.RuleOracleUnavailableException;
 import org.archive.accesscontrol.model.RegexRule;
 import org.archive.util.ArchiveUtils;
@@ -24,6 +25,19 @@ public class CustomRegexPolicyOracleFilter extends CustomPolicyOracleFilter {
 			String proxyHostPort) {
 		super(oracleUrl, accessGroup, proxyHostPort);
 	}
+	
+	@Override
+	protected String getRawPolicy(CaptureSearchResult capture) throws RobotsUnavailableException, RuleOracleUnavailableException {
+		String url = capture.getOriginalUrl();
+		Date captureDate = capture.getCaptureDate();
+		Date retrievalDate = new Date();
+
+		RegexRule rule = (RegexRule)client.getRule(
+			ArchiveUtils.addImpliedHttpIfNecessary(url), captureDate,
+			retrievalDate, accessGroup);		
+		
+		return rule == null ? null : rule.getPolicy();
+	}	
 	
 	@Override
 	public int filterObject(CaptureSearchResult o) {
