@@ -25,19 +25,6 @@ public class CustomRegexPolicyOracleFilter extends CustomPolicyOracleFilter {
 	}
 	
 	@Override
-	protected String getRawPolicy(CaptureSearchResult capture) throws RobotsUnavailableException, RuleOracleUnavailableException {
-		String url = capture.getOriginalUrl();
-		Date captureDate = capture.getCaptureDate();
-		Date retrievalDate = new Date();
-
-		RegexRule rule = (RegexRule)client.getRule(
-			ArchiveUtils.addImpliedHttpIfNecessary(url), captureDate,
-			retrievalDate, accessGroup);		
-		
-		return rule == null ? null : rule.getPolicy();
-	}	
-	
-	@Override
 	public int filterObject(CaptureSearchResult o) {
 		int filterResult = super.filterObject(o);
 		
