@@ -2,6 +2,7 @@ package org.archive.wayback.core;
 
 import java.util.Date;
 
+import org.archive.accesscontrol.model.RegexRule;
 import org.archive.wayback.util.url.UrlOperations;
 
 public class FastCaptureSearchResult extends CaptureSearchResult {
@@ -18,7 +19,16 @@ public class FastCaptureSearchResult extends CaptureSearchResult {
 	protected String file;
 	protected String robotFlags;
 	protected String oraclePolicy;
+	protected RegexRule rule;
 	
+	public RegexRule getOracleRegexRule() {
+		return rule;
+	}
+
+	public void setOracleRegexRule(RegexRule rule) {
+		this.rule = rule;
+	}
+
 	protected CaptureSearchResult revisitPayload = null;
 
 	private boolean duplicateDigest = false;

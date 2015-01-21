@@ -11,8 +11,8 @@ import org.archive.accesscontrol.AccessControlException;
 import org.archive.accesscontrol.RobotsUnavailableException;
 import org.archive.accesscontrol.RuleOracleUnavailableException;
 import org.archive.util.ArchiveUtils;
-import org.archive.wayback.accesscontrol.ContextExclusionFilterFactory;
 import org.archive.wayback.accesscontrol.CollectionContext;
+import org.archive.wayback.accesscontrol.ContextExclusionFilterFactory;
 import org.archive.wayback.accesscontrol.oracleclient.CustomPolicyOracleFilter.Policy;
 import org.archive.wayback.core.CaptureSearchResult;
 import org.archive.wayback.replay.html.RewriteDirector;
@@ -27,14 +27,14 @@ public class OraclePolicyService implements ContextExclusionFilterFactory, Rewri
 
 	private static final Logger LOGGER = Logger.getLogger(OraclePolicyService.class.getName());
 
-	private String oracleUrl;
-	private String proxyHostPort;
+	protected String oracleUrl;
+	protected String proxyHostPort;
 
 	private String fallbackAccessGroup;
 
 	// Now AccessControlClient is shared among multiple ExclusionFilter and RewriteDirector instances.
 	// Is AccessControlClient really thread-safe?
-	private AccessControlClient client;
+	protected AccessControlClient client;
 
 	public void setOracleUrl(String oracleUrl) {
 		this.oracleUrl = oracleUrl;
@@ -80,17 +80,6 @@ public class OraclePolicyService implements ContextExclusionFilterFactory, Rewri
 				client.setRobotProxy(host, port);
 			}
 		}
-	}
-
-	protected String getRawPolicy(String accessGroup,
-			CaptureSearchResult capture) throws RobotsUnavailableException,
-			RuleOracleUnavailableException {
-		String url = capture.getOriginalUrl();
-		Date captureDate = capture.getCaptureDate();
-		Date retrievalDate = new Date();
-
-		return client.getPolicy(ArchiveUtils.addImpliedHttpIfNecessary(url),
-			captureDate, retrievalDate, accessGroup);
 	}
 
 	/* (non-Javadoc)
@@ -144,6 +133,17 @@ public class OraclePolicyService implements ContextExclusionFilterFactory, Rewri
 			return null;
 		}
 	}
+	
+	protected String getRawPolicy(String accessGroup,
+			CaptureSearchResult capture) throws RobotsUnavailableException,
+			RuleOracleUnavailableException {
+		String url = capture.getOriginalUrl();
+		Date captureDate = capture.getCaptureDate();
+		Date retrievalDate = new Date();
+
+		return client.getPolicy(ArchiveUtils.addImpliedHttpIfNecessary(url),
+			captureDate, retrievalDate, accessGroup);
+	}	
 
 //	@Override
 //	public RewriteDirector getRewriteDirector(ExclusionContext context) {

@@ -49,6 +49,8 @@ public class OracleExclusionFilter extends ExclusionFilter {
 	private boolean notifiedAdminSeen = false;
 	private boolean notifiedAdminPassed = false;
 
+	public OracleExclusionFilter() {}
+	
 	/**
 	 * @param oracleUrl String URL prefix for the Oracle HTTP server
 	 * @param accessGroup String group to use with requests to the Oracle

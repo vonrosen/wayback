@@ -112,16 +112,8 @@ public class ArchivalURLJSStringTransformerReplayRenderer extends TextReplayRend
 		// custom Archival-URL ReplayRenderers needs this, too.
 		// We should move this code somewhere reusable (ReplayParseContext? -
 		// which would push us to define new interface for rewriting).
-		String policy = result.getOraclePolicy();
-		if (policy == null) {
-			AccessPoint accessPoint = wbRequest.getAccessPoint();
-			if (accessPoint != null) {
-				policy = accessPoint.getRewriteDirective(result);
-			}
-		}
-		if (policy != null) {
-			context.setOraclePolicy(policy);
-		}
+		
+		handleOraclePolicy(context, wbRequest, result);
 		
 		//RewriteReplayParseEventHandler.addRewriteParseContext(context);
 		
@@ -137,6 +129,19 @@ public class ArchivalURLJSStringTransformerReplayRenderer extends TextReplayRend
 				httpResponse, wbRequest, results, result, resource));
 	}
 
+	protected void handleOraclePolicy(ParseContext context, WaybackRequest wbRequest, CaptureSearchResult result) {
+		String policy = result.getOraclePolicy();
+		if (policy == null) {
+			AccessPoint accessPoint = wbRequest.getAccessPoint();
+			if (accessPoint != null) {
+				policy = accessPoint.getRewriteDirective(result);
+			}
+		}
+		if (policy != null) {
+			context.setOraclePolicy(policy);
+		}
+	}
+	
 
 	public ContextResultURIConverterFactory getConverterFactory() {
 		return converterFactory;

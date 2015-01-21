@@ -36,6 +36,8 @@ import org.archive.wayback.util.ObjectFilter;
  */
 public class CustomPolicyOracleFilter extends OracleExclusionFilter {
 
+	public CustomPolicyOracleFilter() {}
+	
 	private static final Logger LOGGER = Logger
 			.getLogger(CustomPolicyOracleFilter.class.getName());
 

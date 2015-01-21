@@ -35,6 +35,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.archive.accesscontrol.model.RegexRule;
 import org.archive.format.gzip.zipnum.ZipNumBlockLoader;
 import org.archive.wayback.ExceptionRenderer;
 import org.archive.wayback.QueryRenderer;
@@ -44,8 +45,8 @@ import org.archive.wayback.RequestParser;
 import org.archive.wayback.ResourceStore;
 import org.archive.wayback.ResultURIConverter;
 import org.archive.wayback.UrlCanonicalizer;
-import org.archive.wayback.accesscontrol.ContextExclusionFilterFactory;
 import org.archive.wayback.accesscontrol.CollectionContext;
+import org.archive.wayback.accesscontrol.ContextExclusionFilterFactory;
 import org.archive.wayback.accesscontrol.ExclusionFilterFactory;
 import org.archive.wayback.archivalurl.ArchivalUrl;
 import org.archive.wayback.core.CaptureSearchResult;
@@ -75,6 +76,7 @@ import org.archive.wayback.memento.MementoUtils;
 import org.archive.wayback.replay.DefaultReplayCaptureSelector;
 import org.archive.wayback.replay.ReplayCaptureSelector;
 import org.archive.wayback.replay.html.RewriteDirector;
+import org.archive.wayback.replay.html.RuleRewriteDirector;
 import org.archive.wayback.resourceindex.cdxserver.EmbeddedCDXServerIndex;
 import org.archive.wayback.resourceindex.filters.ExclusionFilter;
 import org.archive.wayback.resourceindex.filters.WARCRevisitAnnotationFilter;
@@ -182,6 +184,15 @@ public class AccessPoint extends AbstractRequestHandler implements
 
 	private ExclusionFilterFactory exclusionFactory = null;
 	private RewriteDirector rewriteDirector;
+	private RuleRewriteDirector ruleRewriteDirector;
+
+	public RuleRewriteDirector getRuleRewriteDirector() {
+		return ruleRewriteDirector;
+	}
+
+	public void setRuleRewriteDirector(RuleRewriteDirector ruleRewriteDirector) {
+		this.ruleRewriteDirector = ruleRewriteDirector;
+	}
 
 	private BooleanOperator<WaybackRequest> authentication = null;
 	private boolean requestAuth = true;
@@ -410,6 +421,16 @@ public class AccessPoint extends AbstractRequestHandler implements
 		RewriteDirector rd = getRewriteDirector();
 		if (rd != null) {
 			directive = rd.getRewriteDirective(this, capture);
+		}
+		return directive;
+	}
+	
+	public RegexRule getRewriteDirectiveRule(CaptureSearchResult capture) {
+		RegexRule directive = null;
+		// use getter, as it may be overridden in sub-classes.
+		RuleRewriteDirector rd = getRuleRewriteDirector();
+		if (rd != null) {
+			directive = rd.getRewriteDirectiveRule(this, capture);
 		}
 		return directive;
 	}

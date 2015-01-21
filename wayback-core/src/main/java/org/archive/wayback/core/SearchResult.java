@@ -44,7 +44,7 @@ public class SearchResult {
 	 * be found in the Properties...
 	 */
 	protected HashMap<String, String> data = null;
-
+	
 	public SearchResult() {
 		data = new HashMap<String, String>();
 	}
@@ -68,7 +68,7 @@ public class SearchResult {
 	protected void put(String key, String value) {
 		data.put(key, value);
 	}
-
+	
 	// Explicitly for external/custom properties, ensure map is created
 	public void putCustom(String key, String value) {
 		ensureMap();

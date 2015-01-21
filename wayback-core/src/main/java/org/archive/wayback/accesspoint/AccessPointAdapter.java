@@ -40,6 +40,7 @@ import org.archive.wayback.accesspoint.proxy.ProxyAccessPoint;
 import org.archive.wayback.core.WaybackRequest;
 import org.archive.wayback.replay.html.ContextResultURIConverterFactory;
 import org.archive.wayback.replay.html.RewriteDirector;
+import org.archive.wayback.replay.html.RuleRewriteDirector;
 import org.archive.wayback.resourceindex.filters.ExclusionFilter;
 import org.archive.wayback.util.operator.BooleanOperator;
 import org.archive.wayback.webapp.AccessPoint;
@@ -391,5 +392,10 @@ public class AccessPointAdapter extends AccessPoint {
 	@Override
 	public RewriteDirector getRewriteDirector() {
 		return composite.getRewriteDirector();
+	}
+	
+	@Override
+	public RuleRewriteDirector getRuleRewriteDirector() {
+		return composite.getRuleRewriteDirector();
 	}
 }
