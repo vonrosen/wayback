@@ -41,6 +41,8 @@ import org.archive.wayback.ExceptionRenderer;
 import org.archive.wayback.QueryRenderer;
 import org.archive.wayback.ReplayDispatcher;
 import org.archive.wayback.ReplayRenderer;
+import org.archive.wayback.ReplayURIConverter;
+import org.archive.wayback.ReplayURIConverter.URLStyle;
 import org.archive.wayback.RequestParser;
 import org.archive.wayback.ResourceStore;
 import org.archive.wayback.ResultURIConverter;
@@ -956,8 +958,14 @@ public class AccessPoint extends AbstractRequestHandler implements
 					}
 				}
 
+				ResultURIConverter uriConverter = getUriConverter();
+				// allow sub-class to add custom request-sensitive behavior to base ReplayURIConverter.
+				if (uriConverter instanceof ReplayURIConverter) {
+					uriConverter = decorateURIConverter((ReplayURIConverter)uriConverter, httpRequest, wbRequest);
+				}
+
 				renderer.renderResource(httpRequest, httpResponse, wbRequest,
-					closest, httpHeadersResource, payloadResource, getUriConverter(), captureResults);
+					closest, httpHeadersResource, payloadResource, uriConverter, captureResults);
 
 				p.rendered();
 				p.write(wbRequest.getReplayTimestamp() + " " +
@@ -1680,6 +1688,41 @@ public class AccessPoint extends AbstractRequestHandler implements
 		this.uriConverter = uriConverter;
 	}
 
+	/**
+	 * Return replay URL builder decorated with request-sensitive behavior if necessary.
+	 * Base implementation returns {@code uriConverter} as it is.
+	 * @param uriConverter base, request-agnostic, replay URL builder (return value of
+	 * {@link #getUriConverter()}.
+	 * @param httpRequest current servlet request
+	 * @param wbRequest current wayback request
+	 * @return possibly decorated replay URL builder
+	 */
+	public ReplayURIConverter decorateURIConverter(
+			ReplayURIConverter uriConverter, HttpServletRequest httpRequest,
+			WaybackRequest wbRequest) {
+		return uriConverter;
+	}
+
+	/**
+	 * Shortcut for calling {@link ReplayURIConverter#makeReplayURI(String, String, String, URLStyle)}.
+	 * Current implementation also have backward-compatibility code supporting ResultURIConveretr.
+	 * @param datespec replay timestamp (do not include context flags)
+	 * @param url replay target URL
+	 * @param flags context flags (ex. "{@code cs_}")
+	 * @param urlStyle desired URL style
+	 * @return replay URL for this access point
+	 */
+	public String makeReplayURI(String datespec, String url, String flags,
+			URLStyle urlStyle) {
+		ResultURIConverter uriConverter = getUriConverter();
+		if (uriConverter instanceof ReplayURIConverter) {
+			return ((ReplayURIConverter)uriConverter).makeReplayURI(datespec,
+				url, flags, urlStyle);
+		} else {
+			return uriConverter.makeReplayURI(flags != null ? datespec + flags
+					: datespec, url);
+		}
+	}
 
 	/**
 	 * @return the ExclusionFilterFactory in use with this AccessPoint

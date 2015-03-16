@@ -30,6 +30,7 @@ import org.archive.accesscontrol.model.RegexRule;
 import org.archive.url.UsableURI;
 import org.archive.url.UsableURIFactory;
 import org.archive.wayback.core.CaptureSearchResult;
+import org.archive.wayback.util.url.UrlOperations;
 /**
  * Class which tracks the context and state involved with parsing an HTML
  * document via SAX events.
@@ -124,6 +125,9 @@ public class ParseContext {
 	 * @throws URISyntaxException if the input URL is malformed
 	 */
 	public String resolve(String url) throws URISyntaxException {
+		if (url.startsWith(UrlOperations.JAVASCRIPT_PREFIX))
+			return url;
+
 		int hashIdx = url.indexOf('#');
 		String frag = "";
 		if (hashIdx != -1) {

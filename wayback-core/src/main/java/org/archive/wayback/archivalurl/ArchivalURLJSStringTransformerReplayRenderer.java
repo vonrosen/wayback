@@ -13,12 +13,13 @@ import org.archive.wayback.core.CaptureSearchResults;
 import org.archive.wayback.core.Resource;
 import org.archive.wayback.core.UIResults;
 import org.archive.wayback.core.WaybackRequest;
+import org.archive.wayback.proxy.ProxyHttpsReplayURIConverter;
 import org.archive.wayback.replay.HttpHeaderProcessor;
 import org.archive.wayback.replay.JSPExecutor;
+import org.archive.wayback.replay.ReplayURLTransformer;
 import org.archive.wayback.replay.TextDocument;
 import org.archive.wayback.replay.TextReplayRenderer;
 import org.archive.wayback.replay.html.ContextResultURIConverterFactory;
-import org.archive.wayback.replay.html.IdentityResultURIConverterFactory;
 import org.archive.wayback.replay.html.ReplayParseContext;
 import org.archive.wayback.replay.html.StringTransformer;
 import org.archive.wayback.util.htmllex.ParseContext;
@@ -48,7 +49,9 @@ public class ArchivalURLJSStringTransformerReplayRenderer extends TextReplayRend
 
 
 	private StringTransformer transformer;
+	// deprecated
 	private ContextResultURIConverterFactory converterFactory = null;
+	// deprecated
 	private boolean rewriteHttpsOnly;
 
 	
@@ -62,11 +65,20 @@ public class ArchivalURLJSStringTransformerReplayRenderer extends TextReplayRend
 	}
 	
 
+	/**
+	 * Return whether HTTPS absolute URLs are rewritten.
+	 * @return boolean
+	 * @deprecated 2015-02-10 use {@link ProxyHttpsReplayURIConverter#isRewriteHttps()}
+	 */
 	public boolean isRewriteHttpsOnly() {
 		return rewriteHttpsOnly;
 	}
 
-
+	/**
+	 * Turn HTTPS rewriting on/off (default {@code false})
+	 * @param rewriteHttpsOnly
+	 * @deprecated 2015-02-10 use {@link ProxyHttpsReplayURIConverter#setRewriteHttps(boolean)}
+	 */
 	public void setRewriteHttpsOnly(boolean rewriteHttpsOnly) {
 		this.rewriteHttpsOnly = rewriteHttpsOnly;
 	}
@@ -79,22 +91,9 @@ public class ArchivalURLJSStringTransformerReplayRenderer extends TextReplayRend
 			Resource resource, ResultURIConverter uriConverter,
 			CaptureSearchResults results) throws ServletException, IOException {
 		
-		// same code in ArchivalUrlSAXRewriteReplayRenderer
-		ContextResultURIConverterFactory fact = null;
-		
-		if (uriConverter instanceof ArchivalUrlResultURIConverter) {
-			fact = new ArchivalUrlContextResultURIConverterFactory(
-					(ArchivalUrlResultURIConverter) uriConverter);
-		} else if (converterFactory != null) {
-			fact = converterFactory;
-		} else {
-			fact = new IdentityResultURIConverterFactory(uriConverter);			
-		}		
-		
 		// set up the context:
-		ReplayParseContext context = new ReplayParseContext(fact, result);
-		
-		context.setRewriteHttpsOnly(rewriteHttpsOnly);
+		final ReplayParseContext context = ReplayParseContext.create(
+			uriConverter, converterFactory, result, rewriteHttpsOnly);
 		
 		UIResults uiResults = new UIResults(wbRequest, uriConverter, results, result, resource);
 		JSPExecutor jspExec = new JSPExecutor(httpRequest, httpResponse, uiResults);
@@ -143,11 +142,30 @@ public class ArchivalURLJSStringTransformerReplayRenderer extends TextReplayRend
 	}
 	
 
+	/**
+	 * @return ResultURIConverter factory
+	 * @deprecated 2015-02-10 no direct replacement
+	 * @see ReplayURLTransformer
+	 * @deprecated 2015-02-10 no direct replacement
+	 * @see ReplayURLTransformer
+	 */
 	public ContextResultURIConverterFactory getConverterFactory() {
 		return converterFactory;
 	}
 
-
+	/**
+	 * Set a factory to be used for constructing contextualized
+	 * {@link ResultURIConverter}.
+	 * <p>
+	 * If set, it will be used even when
+	 * base ResultURIConverter implements {@link ContextResultURIConverterFactory}
+	 * interface. Usually ResultURIConverter's own factory implementation is
+	 * sufficient, and slightly more efficient.
+	 * </p>
+	 * @param converterFactory factory object
+	 * @deprecated 2015-02-10 no direct replacement
+	 * @see ReplayURLTransformer
+	 */
 	public void setConverterFactory(
 			ContextResultURIConverterFactory converterFactory) {
 		this.converterFactory = converterFactory;
