@@ -38,6 +38,8 @@ import org.archive.wayback.exception.BadContentException;
  */
 public class HttpHeaderOperation {
 	public final static String HTTP_LENGTH_HEADER = "Content-Length";
+	public final static String HTTP_ACCEPT_RANGES_HEADER = "Accept-Ranges";
+	public final static String HTTP_ETAG_HEADER = "ETag";
 	public final static String HTTP_LENGTH_HEADER_UP = 
 		HTTP_LENGTH_HEADER.toUpperCase();
 	public final static String HTTP_TRANSFER_ENC_HEADER = 
@@ -110,6 +112,16 @@ public class HttpHeaderOperation {
 	public static String getContentLength(Map<String,String> headers) {
 		return getHeaderValue(headers,HTTP_LENGTH_HEADER);
 	}
+	
+	public static String getAcceptRanges(Map<String,String> headers) {
+	    return getHeaderValue(headers,HTTP_ACCEPT_RANGES_HEADER);
+	}
+	
+	public static String getETag(Map<String,String> headers) {
+	    return getHeaderValue(headers,HTTP_ETAG_HEADER);
+	}
+	
+	
 	public static boolean isChunkEncoded(Map<String,String> headers) {
 		String enc = getHeaderValue(headers,HTTP_TRANSFER_ENC_HEADER);
 		if(enc != null) {

@@ -102,6 +102,16 @@ public class TransparentReplayRenderer implements ReplayRenderer {
 			}
 		}
 
+		String origAcceptRanges = HttpHeaderOperation.getAcceptRanges(headers);
+		if (origAcceptRanges != null) {
+			headers.put(HttpHeaderOperation.HTTP_ACCEPT_RANGES_HEADER, origAcceptRanges);
+		}
+		
+		String eTag = HttpHeaderOperation.getETag(headers);
+		if (eTag != null) {
+			headers.put(HttpHeaderOperation.HTTP_ETAG_HEADER, eTag);
+		}
+		
 		HttpHeaderOperation.sendHeaders(headers, httpResponse);
 
 		// and copy the raw byte-stream.
