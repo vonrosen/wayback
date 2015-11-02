@@ -84,6 +84,7 @@ import org.archive.wayback.util.operator.BooleanOperator;
 import org.archive.wayback.util.url.UrlOperations;
 import org.archive.wayback.util.webapp.AbstractRequestHandler;
 import org.archive.wayback.util.webapp.ShutdownListener;
+import org.archive.wayback.util.webapp.SpringReader;
 import org.archive.wayback.webapp.LiveWebRedirector.LiveWebState;
 
 /**
@@ -196,6 +197,8 @@ public class AccessPoint extends AbstractRequestHandler implements
 	private int maxRedirectAttempts = 0;
 
 	private boolean fixedEmbeds = false;
+	
+	private ReplayCaptureSelector captureSelector = null;
 
 	public void init() {
 		checkAccessPointAware(collection,exception,query,parser,replay,
@@ -775,7 +778,7 @@ public class AccessPoint extends AbstractRequestHandler implements
 			p.queried();
 		}
 
-		ReplayCaptureSelector captureSelector = new DefaultReplayCaptureSelector(getReplay());
+		ReplayCaptureSelector captureSelector = (ReplayCaptureSelector)SpringReader.getCurrentContext().getBean("captureSelector", new Object [] { getReplay() });
 		captureSelector.setRequest(wbRequest);
 		captureSelector.setCaptures(captureResults);
 
@@ -1944,4 +1947,12 @@ public class AccessPoint extends AbstractRequestHandler implements
 			PerfStats.OutputFormat perfStatsHeaderFormat) {
 		this.perfStatsHeaderFormat = perfStatsHeaderFormat;
 	}
+	
+	public ReplayCaptureSelector getCaptureSelector() {
+		return captureSelector;
+	}
+
+	public void setCaptureSelector(ReplayCaptureSelector captureSelector) {
+		this.captureSelector = captureSelector;
+	}	
 }
