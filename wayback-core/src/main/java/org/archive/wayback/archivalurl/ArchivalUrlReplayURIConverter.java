@@ -133,6 +133,7 @@ public class ArchivalUrlReplayURIConverter implements ReplayURIConverter, Replay
 		if (url.startsWith("\\/\\/")) return true;
 		if (url.startsWith("\\\\/\\\\/")) return true;
 		if (url.startsWith("\\\\u00252F\\\\u00252F")) return true;
+		if (url.startsWith("\\u002F\\u002F")) return true;
 		return false;
 	}
 

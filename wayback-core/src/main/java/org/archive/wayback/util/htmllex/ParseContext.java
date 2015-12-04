@@ -130,6 +130,8 @@ public class ParseContext {
 			return url + frag;
 		}
 		
+		url = url.replaceAll("\\\\u002F", "/");
+		
 		try {
 			url = UsableURIFactory.getInstance(baseUrl, url).toString() + frag;
 		} catch (URIException e) {
